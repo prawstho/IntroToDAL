@@ -7,7 +7,7 @@ const port = 3000;
 
 global.DEBUG = true;
 
-const server = http.createServer((request, response) => {
+const server = http.createServer( async (request, response) => {
   if (request.url === '/favicon.ico') {
     // Ignore favicon.ico requests
     response.writeHead(204, {'Content-Type': 'image/x-icon'});
@@ -22,9 +22,10 @@ const server = http.createServer((request, response) => {
       response.end('Welcome to the DAL.');
       break;
     case '/actors/':
-      let theActors = getActors(); // fetch actors from postgresql
-      response.writeHead(200, { 'Content-Type': 'text/plain' });
-      response.end('get theActors()');
+      let theActors = await getActors(); // fetch actors from postgresql
+      response.writeHead(200, { 'Content-Type': 'application/json' });
+      response.write(JSON.stringify(theActors));
+      response.end()
       break;
     default:
       let message = `404 Not Found: ${request.url}`;
