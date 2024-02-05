@@ -1,0 +1,17 @@
+{
+  "name": "introtodal",
+  "version": "1.0.0",
+  "description": "Introduce the building of the data access layer from the database up...",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "date-fns": "^3.3.1",
+    "pg": "^8.11.3",
+    "uuid": "^9.0.1"
+  }
+}
