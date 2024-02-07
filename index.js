@@ -2,6 +2,7 @@ const http = require('http');
 
 const myEmitter = require('./logEvents');
 const { getActors } = require('./services/actors.dal')
+const { getAllFilmsForAllActors } = require('./services/films.dal')
 
 const port = 3000;
 
@@ -27,15 +28,20 @@ const server = http.createServer( async (request, response) => {
       response.write(JSON.stringify(theActors));
       response.end()
       break;
+    case '/films/':
+      let theFilms = await getAllFilmsForAllActors();
+      response.writeHead(200, { 'Content-Type': 'application/json' });
+      response.write(JSON.stringify(theFilms));
+      response.end();
+      break;
     default:
-      let message = `404 Not Found: ${request.url}`;
+      let message = `404 - Content Not Found.`;
       if(DEBUG) console.log(message);
-      myEmitter.emit('error', message);
+      myEmitter.emit('event', request.url, 'ERROR', message);
       response.writeHead(404, { 'Content-Type': 'text/plain' });
-      response.end('404 Not Found');
+      response.end('404 - Content Not Found.');
       break;
   }
-
 });
 
 server.listen(port, () => {
