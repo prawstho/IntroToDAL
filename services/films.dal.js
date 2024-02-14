@@ -5,16 +5,6 @@ var getAllFilmsForAllActors = function() {
   if(DEBUG) console.log("films.dal.getFilms()");
   return new Promise(function(resolve, reject) {
 
-    const sql1 = `SELECT actor.first_name,
-    actor.last_name,
-    film.title,
-    film.release_year,
-    film.rating
-   FROM film
-     JOIN film_actor USING (film_id)
-     JOIN actor USING (actor_id)
-     ORDER BY last_name ASC LIMIT 25;`
-
     const sql2 = `SELECT * FROM actor_films
       ORDER BY last_name ASC LIMIT 25;`
 
@@ -24,7 +14,6 @@ var getAllFilmsForAllActors = function() {
         if(DEBUG) console.log(err);
         reject(err);
       } else {
-        if(DEBUG) console.log("inside the films.dal.getAllFilmsForAllActors() function");
         if(DEBUG) console.log(result.rows);
         resolve(result.rows);
       }
@@ -32,8 +21,25 @@ var getAllFilmsForAllActors = function() {
   }); 
 };
 
-var getFilmById = function() {
+var getFilmById = function(theFilmId) {
   if(DEBUG) console.log("films.dal.getFilmById()");
+  return new Promise(function(resolve, reject) {
+
+    const sql = `SELECT * FROM actor_films \
+      WHERE film_id = $1 \
+      ORDER BY last_name ASC;`
+
+    dal.query(sql, [theFilmId], (err, result) => {
+      if (err) {
+        // logging should go here
+        if(DEBUG) console.log(err);
+        reject(err);
+      } else {
+        if(DEBUG) console.log(result.rows);
+        resolve(result.rows);
+      }
+    }); 
+  }); 
 };
 
 var addFilm = function() {
@@ -42,4 +48,5 @@ var addFilm = function() {
 
 module.exports = {
   getAllFilmsForAllActors,
+  getFilmById,
 }

@@ -2,11 +2,11 @@ const express = require("express");
 const app = express();
 
 const { getActors, getActorById } = require('./services/actors.dal')
-const { getAllFilmsForAllActors } = require('./services/films.dal')
+const { getFilmById, getAllFilmsForAllActors } = require('./services/films.dal')
 
 const PORT =  3000;
 
-global.DEBUG = false;
+global.DEBUG = true;
 
 // Create Read Update Delete (CRUD)
 // app.post   //CREATE html
@@ -48,6 +48,14 @@ app.get("/films", async (request, response) => {
   let theFilms = await getAllFilmsForAllActors();
   response.write(JSON.stringify(theFilms));
   response.end();
+})
+
+app.get("/films/:id", async (request, response) => {
+  if(DEBUG) console.log("/films/:id route was accessed.")
+  if(DEBUG) console.log(`The id is ${request.params.id}`)
+  let aFilm = await getFilmById(request.params.id); // fetch film from postgresql
+  response.write(JSON.stringify(aFilm));
+  response.end()
 })
 
 app.use((request, response) => {
