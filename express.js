@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 
+const myEmitter = require('./logEvents');
+
 const { getActors, getActorById } = require('./services/actors.dal')
 const { getFilmById, getAllFilmsForAllActors } = require('./services/films.dal')
 
@@ -10,7 +12,7 @@ global.DEBUG = true;
 
 // Create Read Update Delete (CRUD)
 // app.post   //CREATE html
-// app.get    //READ html
+// app.get    //READ html 
 // app.put    //UPDATE
 // app.patch  //UPDATE 
 // app.delete //DELETE
@@ -29,37 +31,63 @@ app.get("/about", (request, response) => {
 
 app.get("/actors", async (request, response) => {
   if(DEBUG) console.log("/actors route was accessed.")
-  let theActors = await getActors(); // fetch actors from postgresql
-  response.write(JSON.stringify(theActors));
-  response.end();
+  try {
+    let theActors = await getActors(); // fetch actors from postgresql
+    myEmitter.emit('event', request.url, 'SUCCESS', 'Results fetched from database.');
+    response.write(JSON.stringify(theActors));
+    response.end();
+  } catch {
+    if(DEBUG) console.log("Error fetching actors data.")
+    myEmitter.emit('event', request.url, 'ERROR', '500 - Server error with data fetching.');
+    response.status(500).send('500 - Server error with data fetching.');
+  }
 })
 
 app.get("/actors/:id", async (request, response) => {
-  if(DEBUG) console.log("/actors/:id route was accessed.")
-  // response.send(`The id is ${request.params.id}`)
-  let anActor = await getActorById(request.params.id); // fetch actor from postgresql
-  response.writeHead(200, { 'Content-Type': 'application/json' });
-  response.write(JSON.stringify(anActor));
-  response.end()
+  if(DEBUG) console.log(`/actors/:id route was accessed using id: ${request.params.id}.`)
+  try {
+    let anActor = await getActorById(request.params.id); // fetch actor from postgresql
+    myEmitter.emit('event', request.url, 'SUCCESS', 'Result fetched from db for actor_id: ' + request.params.id + '.'); 
+    response.write(JSON.stringify(anActor));
+    response.end()
+  } catch {
+    if(DEBUG) console.log("Error fetching actor data.")
+    myEmitter.emit('event', request.url, 'ERROR', '500 - Server error with data fetching.');
+    response.status(500).send('500 - Server error with data fetching.');
+  }
 })
 
 app.get("/films", async (request, response) => {
   if(DEBUG) console.log("/films route was accessed.")
-  let theFilms = await getAllFilmsForAllActors();
-  response.write(JSON.stringify(theFilms));
-  response.end();
+  try {
+    let theFilms = await getAllFilmsForAllActors();
+    myEmitter.emit('event', request.url, 'SUCCESS', 'Results fetched from database.');
+    response.write(JSON.stringify(theFilms));
+    response.end();
+  } catch {
+    if(DEBUG) console.log("Error fetching films data.")
+    myEmitter.emit('event', request.url, 'ERROR', '500 - Server error with data fetching.');
+    response.status(500).send('500 - Server error with data fetching.');
+  }
 })
 
 app.get("/films/:id", async (request, response) => {
-  if(DEBUG) console.log("/films/:id route was accessed.")
-  if(DEBUG) console.log(`The id is ${request.params.id}`)
-  let aFilm = await getFilmById(request.params.id); // fetch film from postgresql
-  response.write(JSON.stringify(aFilm));
-  response.end()
+  if(DEBUG) console.log(`/films/:id route was accessed using id: ${request.params.id}.`)
+  try {
+    let aFilm = await getFilmById(request.params.id); // fetch film from postgresql
+    myEmitter.emit('event', request.url, 'SUCCESS', 'Result fetched from db for film_id: ' + request.params.id + '.');
+    response.write(JSON.stringify(aFilm));
+    response.end()
+  } catch { 
+    if(DEBUG) console.log("Error fetching film data.")
+    myEmitter.emit('event', request.url, 'ERROR', '500 - Server error with data fetching.');
+    response.status(500).send('500 - Server error with data fetching.');
+  }
 })
 
 app.use((request, response) => {
   if(DEBUG) console.log('404 - route not found.');
+  myEmitter.emit('event', request.url, 'ERROR', '404 - route not found.');
   response.status(404).write('404 - route not found.');
   response.end();
 }) 
