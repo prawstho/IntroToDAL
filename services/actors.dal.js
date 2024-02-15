@@ -10,7 +10,6 @@ var getActors = function() {
 
     dal.query(sql, [], (err, result) => {
       if (err) {
-        // logging should go here
         if(DEBUG) console.log(err);
         reject(err);
       } else {
@@ -32,7 +31,6 @@ var getActorById = function(theId) {
 
     dal.query(sql, [theId], (err, result) => {
       if (err) {
-        // logging should go here
         if(DEBUG) console.log(err);
         reject(err);
       } else {
@@ -42,6 +40,14 @@ var getActorById = function(theId) {
       }
     }); 
   }); 
+};
+
+var addActor = function() {
+  if(DEBUG) console.log("films.dal.addActor()");
+};
+
+var updateActor = function() {
+  if(DEBUG) console.log("films.dal.updateActor()");
 };
 
 module.exports = {

@@ -8,7 +8,7 @@ const { format, getYear } = require('date-fns');
 const { v4: uuid } = require('uuid'); //guid
 
 const EventEmitter = require('events');
-class MyEmitter extends EventEmitter {}
+// class MyEmitter extends EventEmitter {}
 const myEmitter = new EventEmitter(); 
 
 myEmitter.on('event', async (event, level, message) => {
